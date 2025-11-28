@@ -214,8 +214,6 @@ class _BadgesTabContentState extends State<BadgesTabContent>
                     ) +
                     getArchivedCount(perfectDayBadges, totalPerfectDays) +
                     getArchivedCount(habitFinishBadges, totalHabitsFinished),
-                backgroundColor: AppColors.primaryPurple, // Use specific color
-                textColor: AppColors.white, // Use specific color
                 countBackgroundColor: AppColors.darkGray, // Use specific color
                 countTextColor: AppColors.primaryPurple, // Use specific color
               ),

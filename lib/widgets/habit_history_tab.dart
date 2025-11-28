@@ -6,7 +6,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:habit_win/utils/date_utils.dart' as my_date_utils;
 import 'package:habit_win/utils/app_colors.dart';
-import 'package:habit_win/utils/custom_icons.dart'; // Import CustomIcon
 
 class HabitHistoryTab extends StatefulWidget {
   final DateTime initialSelectedDate;
@@ -232,7 +231,7 @@ class _HabitHistoryTabState extends State<HabitHistoryTab>
                   ),
                   defaultTextStyle: textTheme.bodyMedium!,
                   todayDecoration: BoxDecoration(
-                    color: colorScheme.primary.withOpacity(0.2),
+                    color: colorScheme.primary.withAlpha((255 * 0.2).round()),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   selectedDecoration: BoxDecoration(

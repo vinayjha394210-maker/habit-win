@@ -49,6 +49,7 @@ dependencies:
   share_plus: ^12.0.0 # For sharing images to other apps
   lottie: ^3.1.0
   permission_handler: ^11.3.1 # Added for notification permissions
+  vector_math: ^2.1.4 # Added for vector_math dependency
 
 dev_dependencies:
   flutter_native_splash: ^2.4.0

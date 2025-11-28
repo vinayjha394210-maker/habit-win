@@ -47,5 +47,7 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
-	</dict>
-</plist>
+		<key>NSUserNotificationAlertOption</key>
+		<string>alert</string>
+		</dict>
+		</plist>

@@ -60,21 +60,18 @@ class _HistoryTabContentState extends State<HistoryTabContent>
                       value:
                           '${habits.isNotEmpty ? habits.map((h) => h.streak).reduce(max) : 0} days',
                       icon: const CustomIcon.material(Icons.history),
-                      color: AppColors.primaryPurple, // Use specific color
                     ),
                     const SizedBox(height: 12),
                     HistoryCardWidget(
                       title: 'Habit Finish',
                       value: '$totalHabitsFinished times',
                       icon: CustomIcon.material(Icons.task_alt),
-                      color: AppColors.lightPurple, // Use specific color
                     ),
                     const SizedBox(height: 12),
                     HistoryCardWidget(
                       title: 'Completion Rate',
                       value: '${overallCompletionRate.round()}%',
                       icon: CustomIcon.material(Icons.percent),
-                      color: AppColors.primaryPurple, // Use specific color
                     ),
                     const SizedBox(height: 20),
                     const StreakHistoryCard(initialDelay: 0),

@@ -10,6 +10,8 @@ import 'package:habit_win/utils/debounce_utils.dart'; // Import Debouncer
 import 'package:habit_win/widgets/icon_picker_widget.dart'; // Import IconPickerWidget
 import 'package:habit_win/widgets/color_picker_widget.dart'; // Import ColorPickerWidget
 import 'package:habit_win/utils/app_dimens.dart'; // Import AppDimens
+import 'package:habit_win/widgets/custom_radio_group.dart'; // Import CustomRadioGroup
+import 'package:habit_win/widgets/top_gradient_background.dart'; // Import TopGradientBackground
 
 class AddHabitScreen extends StatefulWidget {
   final Habit? habit; // Optional habit for editing
@@ -106,7 +108,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     if (_reminderTimes.isNotEmpty) {
       final bool notificationsGranted = await NotificationService.areNotificationsEnabled();
       if (!notificationsGranted) {
-        if (!mounted) return; // Already present, good.
         if (!mounted) return;
         await showDialog(
           context: context,
@@ -285,11 +286,14 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.habit == null ? 'New Habit' : 'Edit Habit'),
-        actions: [
-          TextButton(
+    return Stack(
+      children: [
+        TopGradientBackground(),
+        Scaffold(
+          appBar: AppBar(
+            title: Text(widget.habit == null ? 'New Habit' : 'Edit Habit'),
+            actions: [
+              TextButton(
             onPressed: _isLoading
                 ? null
                 : () {
@@ -309,167 +313,169 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                     style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: AppDimens.paddingMedium + 2),
                   ),
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding for the body
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _habitNameController,
-                decoration: InputDecoration(
-                  labelText: 'Enter habit name',
-                  labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(178)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.borderRadius),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.borderRadius),
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline.withAlpha((255 * 0.5).round()), width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.borderRadius),
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2.0),
-                  ),
-                  errorStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.error),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.surface,
-                ),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                maxLines: 1,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Habit name cannot be empty';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: AppDimens.paddingLarge),
-              Row(
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding for the body
+            child: Form(
+              key: _formKey,
+              child: ListView(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _debouncer.call(_pickColor);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
-                        decoration: BoxDecoration(
-                          color: Color(int.parse(_selectedColor, radix: 16)),
-                          borderRadius: BorderRadius.circular(AppDimens.borderRadius), // More rounded
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow.withAlpha(20), // Softened shadow
-                              blurRadius: AppDimens.elevation,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomIcon.material(Icons.color_lens).toWidget(defaultColor: Colors.white),
-                            const SizedBox(width: AppDimens.paddingSmall + 2),
-                            Text('Color', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white)),
-                          ],
-                        ),
+                  TextFormField(
+                    controller: _habitNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter habit name',
+                      labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(178)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppDimens.borderRadius),
+                        borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppDimens.borderRadius),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.outline.withAlpha((255 * 0.5).round()), width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppDimens.borderRadius),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2.0),
+                      ),
+                      errorStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.error),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
                     ),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                    maxLines: 1,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Habit name cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(width: AppDimens.paddingSmall + 2),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _debouncer.call(_pickIcon);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(AppDimens.borderRadius), // More rounded
-                          border: Border.all(color: Theme.of(context).colorScheme.outline.withAlpha((255 * 0.5).round())),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.shadow.withAlpha(20), // Softened shadow
-                              blurRadius: AppDimens.elevation,
-                              offset: const Offset(0, 3),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _debouncer.call(_pickColor);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
+                            decoration: BoxDecoration(
+                              color: Color(int.parse(_selectedColor, radix: 16)),
+                              borderRadius: BorderRadius.circular(AppDimens.borderRadius), // More rounded
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.shadow.withAlpha(20), // Softened shadow
+                                  blurRadius: AppDimens.elevation,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _selectedIcon.toWidget(
-                              size: 30,
-                              defaultColor: Theme.of(context).colorScheme.onSurface,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomIcon.material(Icons.color_lens).toWidget(defaultColor: Colors.white),
+                                const SizedBox(width: AppDimens.paddingSmall + 2),
+                                Text('Color', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white)),
+                              ],
                             ),
-                            const SizedBox(width: AppDimens.paddingSmall + 2),
-                            Text('Icon', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
-                          ],
+                          ),
                         ),
                       ),
+                      const SizedBox(width: AppDimens.paddingSmall + 2),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _debouncer.call(_pickIcon);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(AppDimens.borderRadius), // More rounded
+                              border: Border.all(color: Theme.of(context).colorScheme.outline.withAlpha((255 * 0.5).round())),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.shadow.withAlpha(20), // Softened shadow
+                                  blurRadius: AppDimens.elevation,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _selectedIcon.toWidget(
+                                  size: 30,
+                                  defaultColor: Theme.of(context).colorScheme.onSurface,
+                                ),
+                                const SizedBox(width: AppDimens.paddingSmall + 2),
+                                Text('Icon', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  SwitchListTile(
+                    title: Text('Set a Goal', style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+                    subtitle: Text('Set your target in a day', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()))),
+                    value: _goalEnabled,
+                    onChanged: (value) {
+                      _debouncer.call(() {
+                        setState(() {
+                          _goalEnabled = value;
+                        });
+                      });
+                    },
+                    activeTrackColor: Theme.of(context).colorScheme.primary, // Use activeTrackColor for the track
+                    activeThumbColor: Theme.of(context).colorScheme.onPrimary, // Ensure switch thumb color adapts
+                  ),
+                  if (_goalEnabled)
+                    _buildGoalInputWithUnitSelector(), // New widget for goal input and unit selector
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  _buildTimeOfDaySelection(),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  _buildStartDateSelection(),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  _buildReminderSelection(),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  _buildRepeatFrequencySection(),
+                  if (_selectedRepeatType == RepeatType.weekly) _buildWeeklyDaySelection(),
+                  if (_selectedRepeatType == RepeatType.monthly) _buildMonthlyDateSelection(),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  if (_selectedRepeatType == RepeatType.oneTime) _buildOneTimeDatePicker(),
+                  const SizedBox(height: AppDimens.paddingLarge),
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _saveHabit,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
+                      textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: AppDimens.paddingMedium + 2, color: Theme.of(context).colorScheme.onPrimary),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.borderRadius)), // Rounded corners
+                      elevation: AppDimens.elevation, // More prominent shadow
                     ),
+                    child: _isLoading
+                        ? SizedBox(
+                            width: AppDimens.paddingLarge, // Larger indicator
+                            height: AppDimens.paddingLarge,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5, // Thicker stroke
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          )
+                        : Text(widget.habit == null ? 'Add Habit' : 'Update Habit'),
                   ),
                 ],
               ),
-              const SizedBox(height: AppDimens.paddingLarge),
-              SwitchListTile(
-                title: Text('Set a Goal', style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
-                subtitle: Text('Set your target in a day', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()))),
-                value: _goalEnabled,
-                onChanged: (value) {
-                  _debouncer.call(() {
-                    setState(() {
-                      _goalEnabled = value;
-                    });
-                  });
-                },
-                activeTrackColor: Theme.of(context).colorScheme.primary, // Use activeTrackColor for the track
-                activeThumbColor: Theme.of(context).colorScheme.onPrimary, // Ensure switch thumb color adapts
-              ),
-              if (_goalEnabled)
-                _buildGoalInputWithUnitSelector(), // New widget for goal input and unit selector
-              const SizedBox(height: AppDimens.paddingLarge),
-              _buildTimeOfDaySelection(),
-              const SizedBox(height: AppDimens.paddingLarge),
-              _buildStartDateSelection(),
-              const SizedBox(height: AppDimens.paddingLarge),
-              _buildReminderSelection(),
-              const SizedBox(height: AppDimens.paddingLarge),
-              _buildRepeatFrequencySection(),
-              if (_selectedRepeatType == RepeatType.weekly) _buildWeeklyDaySelection(),
-              if (_selectedRepeatType == RepeatType.monthly) _buildMonthlyDateSelection(),
-              const SizedBox(height: AppDimens.paddingLarge),
-              if (_selectedRepeatType == RepeatType.oneTime) _buildOneTimeDatePicker(),
-              const SizedBox(height: AppDimens.paddingLarge),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _saveHabit,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(AppDimens.paddingMedium), // Consistent padding
-                  textStyle: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: AppDimens.paddingMedium + 2, color: Theme.of(context).colorScheme.onPrimary),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.borderRadius)), // Rounded corners
-                  elevation: AppDimens.elevation, // More prominent shadow
-                ),
-                child: _isLoading
-                    ? SizedBox(
-                        width: AppDimens.paddingLarge, // Larger indicator
-                        height: AppDimens.paddingLarge,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5, // Thicker stroke
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      )
-                    : Text(widget.habit == null ? 'Add Habit' : 'Update Habit'),
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -850,9 +856,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           'Repeat Frequency',
           style: TextStyle(fontSize: AppDimens.paddingMedium, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
         ),
-        RadioListTile<RepeatType>(
-          title: Text('Daily', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-          value: RepeatType.daily,
+        CustomRadioGroup<RepeatType>(
           groupValue: _selectedRepeatType,
           onChanged: (value) {
             _debouncer.call(() {
@@ -860,85 +864,16 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 _selectedRepeatType = value!;
                 _selectedRepeatDays.clear();
                 _oneTimeDate = null;
-                _selectedRepeatDateOfMonth = 1;
+                _selectedRepeatDateOfMonth = (value == RepeatType.monthly) ? DateTime.now().day : 1;
               });
             });
           },
-          fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.selected)) {
-                return Theme.of(context).colorScheme.primary;
-              }
-              return Theme.of(context).colorScheme.onSurface.withAlpha(178);
-            },
-          ),
-        ),
-        RadioListTile<RepeatType>(
-          title: Text('Weekly', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-          value: RepeatType.weekly,
-          groupValue: _selectedRepeatType,
-          onChanged: (value) {
-            _debouncer.call(() {
-              setState(() {
-                _selectedRepeatType = value!;
-                _oneTimeDate = null;
-                _selectedRepeatDateOfMonth = 1;
-              });
-            });
-          },
-          fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.selected)) {
-                return Theme.of(context).colorScheme.primary;
-              }
-              return Theme.of(context).colorScheme.onSurface.withAlpha(178);
-            },
-          ),
-        ),
-        RadioListTile<RepeatType>(
-          title: Text('Monthly', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-          value: RepeatType.monthly,
-          groupValue: _selectedRepeatType,
-          onChanged: (value) {
-            _debouncer.call(() {
-              setState(() {
-                _selectedRepeatType = value!;
-                _selectedRepeatDays.clear();
-                _oneTimeDate = null;
-                _selectedRepeatDateOfMonth = DateTime.now().day;
-              });
-            });
-          },
-          fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.selected)) {
-                return Theme.of(context).colorScheme.primary;
-              }
-              return Theme.of(context).colorScheme.onSurface.withAlpha(178);
-            },
-          ),
-        ),
-        RadioListTile<RepeatType>(
-          title: Text('One-Time', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-          value: RepeatType.oneTime,
-          groupValue: _selectedRepeatType,
-          onChanged: (value) {
-            _debouncer.call(() {
-              setState(() {
-                _selectedRepeatType = value!;
-                _selectedRepeatDays.clear();
-                _selectedRepeatDateOfMonth = 1;
-              });
-            });
-          },
-          fillColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.selected)) {
-                return Theme.of(context).colorScheme.primary;
-              }
-              return Theme.of(context).colorScheme.onSurface.withAlpha(178);
-            },
-          ),
+          options: [
+            CustomRadioOption(label: 'Daily', value: RepeatType.daily),
+            CustomRadioOption(label: 'Weekly', value: RepeatType.weekly),
+            CustomRadioOption(label: 'Monthly', value: RepeatType.monthly),
+            CustomRadioOption(label: 'One-Time', value: RepeatType.oneTime),
+          ],
         ),
       ],
     );

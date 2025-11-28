@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:crypto/crypto.dart';
 import '../models/habit.dart';
 
 class LocalStorageService {
@@ -12,6 +10,8 @@ class LocalStorageService {
   static const String _streakFreezeKey = 'streakFreezesAvailable';
   static const String _totalPerfectDaysKey = 'totalPerfectDays';
   static const String _totalHabitsCreatedKey = 'totalHabitsCreated';
+  static const String _securityQuestionKey = 'securityQuestion';
+  static const String _passcodeSetupInProgressKey = 'passcodeSetupInProgress';
   static const String _versionKey = 'localStorageVersion';
   static const int _currentVersion = 1;
 
@@ -110,4 +110,25 @@ class LocalStorageService {
     return _prefs.getInt(_totalHabitsCreatedKey) ?? 0;
   }
 
+  // Security Question
+  Future<void> setSecurityQuestion(String question, String answer) async {
+    await _prefs.setString(_securityQuestionKey, jsonEncode({'question': question, 'answer': answer}));
+  }
+
+  Map<String, String>? getSecurityQuestion() {
+    final String? jsonString = _prefs.getString(_securityQuestionKey);
+    if (jsonString == null) {
+      return null;
+    }
+    return Map<String, String>.from(jsonDecode(jsonString));
+  }
+
+  // Passcode Setup Progress
+  Future<void> setPasscodeSetupInProgress(bool inProgress) async {
+    await _prefs.setBool(_passcodeSetupInProgressKey, inProgress);
+  }
+
+  bool getPasscodeSetupInProgress() {
+    return _prefs.getBool(_passcodeSetupInProgressKey) ?? false;
+  }
 }

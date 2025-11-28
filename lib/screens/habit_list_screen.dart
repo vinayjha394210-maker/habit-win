@@ -9,6 +9,7 @@ import 'package:habit_win/screens/habit_history_screen.dart'; // Import HabitHis
 import 'package:intl/intl.dart'; // Import for DateFormat
 
 import 'package:habit_win/utils/debounce_utils.dart'; // Import Debouncer
+import 'package:habit_win/widgets/top_gradient_background.dart'; // Import TopGradientBackground
 
 class HabitListScreen extends StatefulWidget {
   final TimeOfDayType timeOfDayFilter;
@@ -150,67 +151,72 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HabitService>(
-      builder: (context, habitService, child) {
-        final List<Habit> habits = habitService.getFilteredHabits(widget.timeOfDayFilter, widget.selectedDate);
+    return Stack(
+      children: [
+        TopGradientBackground(),
+        Consumer<HabitService>(
+          builder: (context, habitService, child) {
+            final List<Habit> habits = habitService.getFilteredHabits(widget.timeOfDayFilter, widget.selectedDate);
 
-        // This logic handles updating the AnimatedList when the underlying habit data changes.
-        // It compares the new list of habits with the currently displayed habits (_currentHabits)
-        // and performs animated insertions or removals.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _updateAnimatedList(habits);
-        });
+            // This logic handles updating the AnimatedList when the underlying habit data changes.
+            // It compares the new list of habits with the currently displayed habits (_currentHabits)
+            // and performs animated insertions or removals.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _updateAnimatedList(habits);
+            });
 
-        if (habits.isEmpty) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            child: _currentHabits.isEmpty // Only show "No habits" message if _currentHabits is also empty
-                ? Column(
-                    key: const ValueKey('noHabitsMessage'), // Key for AnimatedSwitcher
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_box_outline_blank, // Or a more suitable icon
-                        size: 80,
-                        color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.4).round()),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'No habits scheduled for ${widget.timeOfDayFilter == TimeOfDayType.all ? 'this day' : widget.timeOfDayFilter.toString().split('.').last.capitalize()} on ${DateFormat('MMM d').format(widget.selectedDate)}!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Tap the + button to add a new habit.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
-                        ),
-                      ),
-                    ],
-                  )
-                : const SizedBox.shrink(), // Show nothing if habits are being animated out
-          );
-        } else {
-          return AnimatedList(
-            key: _listKey,
-            padding: const EdgeInsets.all(8.0),
-            initialItemCount: _currentHabits.length,
-            itemBuilder: (context, index, animation) {
-              final habit = _currentHabits[index];
-              return _buildItem(context, habit, animation);
-            },
-          );
-        }
-      },
+            if (habits.isEmpty) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: _currentHabits.isEmpty // Only show "No habits" message if _currentHabits is also empty
+                    ? Column(
+                        key: const ValueKey('noHabitsMessage'), // Key for AnimatedSwitcher
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.check_box_outline_blank, // Or a more suitable icon
+                            size: 80,
+                            color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.4).round()),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'No habits scheduled for ${widget.timeOfDayFilter == TimeOfDayType.all ? 'this day' : widget.timeOfDayFilter.toString().split('.').last.capitalize()} on ${DateFormat('MMM d').format(widget.selectedDate)}!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Tap the + button to add a new habit.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(), // Show nothing if habits are being animated out
+              );
+            } else {
+              return AnimatedList(
+                key: _listKey,
+                padding: const EdgeInsets.all(8.0),
+                initialItemCount: _currentHabits.length,
+                itemBuilder: (context, index, animation) {
+                  final habit = _currentHabits[index];
+                  return _buildItem(context, habit, animation);
+                },
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 

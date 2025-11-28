@@ -4,8 +4,6 @@ class AchievementHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final int achievementCount;
-  final Color backgroundColor;
-  final Color textColor;
   final Color countBackgroundColor;
   final Color countTextColor;
 
@@ -14,8 +12,6 @@ class AchievementHeader extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.achievementCount,
-    required this.backgroundColor,
-    required this.textColor,
     required this.countBackgroundColor,
     required this.countTextColor,
   });
@@ -25,33 +21,55 @@ class AchievementHeader extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: const EdgeInsets.all(16.0),
-      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF7D3CFF),
+            Color(0xFFA566FF),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: textColor.withAlpha((textColor.alpha * 0.8).round()),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500, // Medium
+                    fontSize: 14.0,
+                    color: Colors.white.withOpacity(0.8), // #FFFFFFCC
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           CircleAvatar(
             backgroundColor: countBackgroundColor,

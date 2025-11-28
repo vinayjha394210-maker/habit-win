@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habit_win/widgets/history_tab_content.dart';
 import 'package:habit_win/widgets/badges_tab_content.dart';
 import 'package:habit_win/utils/custom_icons.dart'; // Import CustomIcon
+import 'package:habit_win/widgets/top_gradient_background.dart'; // Import TopGradientBackground
 
 class HistoryScreen extends StatefulWidget {
   final DateTime selectedDate;
@@ -33,43 +34,48 @@ class _HistoryScreenState extends State<HistoryScreen>
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'History',
-          style: textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
+    return Stack(
+      children: [
+        TopGradientBackground(),
+        Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'History',
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
+            backgroundColor: colorScheme.primary,
+            elevation: 0,
+            bottom: TabBar(
+              controller: _tabController,
+              indicatorColor: colorScheme.onPrimary,
+              labelColor: colorScheme.onPrimary,
+              unselectedLabelColor: colorScheme.onPrimary.withAlpha(179),
+              labelStyle: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: textTheme.titleSmall,
+              tabs: <Widget>[
+                Tab(
+                  icon: CustomIcon.material(Icons.analytics).toWidget(size: 20, defaultColor: _tabController.index == 0 ? colorScheme.onPrimary : colorScheme.onPrimary.withAlpha(179)),
+                  text: 'Stats',
+                ),
+                Tab(
+                  icon: CustomIcon.material(Icons.military_tech).toWidget(size: 20, defaultColor: _tabController.index == 1 ? colorScheme.onPrimary : colorScheme.onPrimary.withAlpha(179)),
+                  text: 'Badges',
+                ),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              const HistoryTabContent(),
+              const BadgesTabContent(),
+            ],
           ),
         ),
-        backgroundColor: colorScheme.primary,
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: colorScheme.onPrimary,
-          labelColor: colorScheme.onPrimary,
-          unselectedLabelColor: colorScheme.onPrimary.withAlpha(179),
-          labelStyle: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: textTheme.titleSmall,
-          tabs: <Widget>[
-            Tab(
-              icon: CustomIcon.material(Icons.analytics).toWidget(size: 20, defaultColor: _tabController.index == 0 ? colorScheme.onPrimary : colorScheme.onPrimary.withAlpha(179)),
-              text: 'Stats',
-            ),
-            Tab(
-              icon: CustomIcon.material(Icons.military_tech).toWidget(size: 20, defaultColor: _tabController.index == 1 ? colorScheme.onPrimary : colorScheme.onPrimary.withAlpha(179)),
-              text: 'Badges',
-            ),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          const HistoryTabContent(),
-          const BadgesTabContent(),
-        ],
-      ),
+      ],
     );
   }
 }

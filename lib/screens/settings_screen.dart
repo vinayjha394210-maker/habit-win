@@ -8,6 +8,7 @@ import 'package:habit_win/utils/debounce_utils.dart'; // Import Debouncer
 import 'package:habit_win/widgets/theme_preview_card.dart'; // Import ThemePreviewCard
 import 'package:habit_win/utils/custom_icons.dart'; // Import CustomIcon
 import 'package:habit_win/utils/app_dimens.dart'; // Import AppDimens
+import 'package:habit_win/widgets/top_gradient_background.dart'; // Import TopGradientBackground
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -19,7 +20,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
 
   final NotificationService _notificationService = NotificationService();
-  final LocalStorageService _localStorageService = LocalStorageService();
   final Debouncer _debouncer = Debouncer();
 
   @override
@@ -97,40 +97,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+    return Stack(
+      children: [
+        TopGradientBackground(),
+        Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Settings',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          body: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium, vertical: AppDimens.paddingSmall + 4),
+                child: SwitchListTile(
+                  title: Text('Notifications', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
+                  secondary: CustomIcon.material(Icons.notifications).toWidget(defaultColor: Theme.of(context).colorScheme.onSurface),
+                  value: _notificationsEnabled,
+                  onChanged: _toggleNotifications,
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
+                  contentPadding: EdgeInsets.zero, // Remove default padding
+                ),
+              ),
+              // Theme selection card
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium, vertical: AppDimens.paddingSmall),
+                elevation: AppDimens.paddingSmall - 4, // Softened shadow
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.borderRadius)), // Rounded corners
+                child: ListTile(
+                  leading: CustomIcon.material(Icons.color_lens).toWidget(defaultColor: Theme.of(context).colorScheme.onSurface),
+                  title: Text('Choose Theme', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
+                  trailing: Text(themeNotifier.currentTheme.name, style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.primary)),
+                  onTap: () => _debouncer.call(() => _showThemePickerDialog(context, themeNotifier)),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium, vertical: AppDimens.paddingSmall + 4),
-            child: SwitchListTile(
-              title: Text('Notifications', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
-              secondary: CustomIcon.material(Icons.notifications).toWidget(defaultColor: Theme.of(context).colorScheme.onSurface),
-              value: _notificationsEnabled,
-              onChanged: _toggleNotifications,
-              activeThumbColor: Theme.of(context).colorScheme.primary,
-              contentPadding: EdgeInsets.zero, // Remove default padding
-            ),
-          ),
-          // Theme selection card
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium, vertical: AppDimens.paddingSmall),
-            elevation: AppDimens.paddingSmall - 4, // Softened shadow
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.borderRadius)), // Rounded corners
-            child: ListTile(
-              leading: CustomIcon.material(Icons.color_lens).toWidget(defaultColor: Theme.of(context).colorScheme.onSurface),
-              title: Text('Choose Theme', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
-              trailing: Text(themeNotifier.currentTheme.name, style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.primary)),
-              onTap: () => _debouncer.call(() => _showThemePickerDialog(context, themeNotifier)),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 

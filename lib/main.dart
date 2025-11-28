@@ -14,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final NotificationService notificationService = NotificationService();
   await notificationService.init(navigatorKey);
+  await notificationService.requestPermissions();
   await localStorageService.init();
 
   runApp(
@@ -110,7 +111,9 @@ class _AppStartScreenState extends State<AppStartScreen> {
   @override
   void initState() {
     super.initState();
-    _checkInitialRoute();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkInitialRoute();
+    });
   }
 
   void _checkInitialRoute() {

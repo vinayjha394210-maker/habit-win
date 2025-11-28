@@ -12,6 +12,7 @@ import 'package:provider/provider.dart'; // Import provider
 import 'package:habit_win/services/habit_service.dart'; // Import HabitService
 import 'package:habit_win/utils/debounce_utils.dart'; // Import Debouncer
 import 'package:habit_win/utils/custom_icons.dart'; // Import CustomIcon
+import 'package:habit_win/widgets/top_gradient_background.dart'; // Import TopGradientBackground
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -210,142 +211,144 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
 
-        return Scaffold(
-          appBar: _mainSelectedIndex == 0
-              ? PreferredSize(
-                  preferredSize: const Size.fromHeight(271.0),
-                  child: AppBar(
-                    toolbarHeight: 271.0,
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    flexibleSpace: HomeAppBarContent(
-                      selectedDate: _selectedDate,
-                      onDateSelected: _onDateSelected,
-                      timeOfDayFilter: _selectedTimeOfDayFilter,
-                      onTimeOfDayFilterTapped: _onTimeOfDayFilterTapped,
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                      isToday: isToday,
-                      dayLabel: dayLabel,
-                      formattedDate: formattedDate,
-                      debouncer: _debouncer,
-                      onGoToToday: _onGoToToday,
-                    ),
-                  ),
-                )
-              : null,
-          body: _mainSelectedIndex == 0 && habitService.habits.isEmpty
-              ? Center(
-                  // Animation visible when no habits and on Home screen
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: AnimatedBuilder( // Wrap with AnimatedBuilder
-                          animation: _lottieAnimationController,
-                          builder: (context, child) {
-                            return Lottie.asset(
-                              key: ValueKey('noHabitsAnimation-${context.read<HabitService>().habits.isEmpty}'), // Updated key
-                              'assets/Meditation  Wait please.json',
-                              controller: _lottieAnimationController, // Assign the new controller
-                              width: 220,
-                              height: 220,
-                              fit: BoxFit.contain,
-                            );
-                          },
+        return Stack(
+          children: [
+            TopGradientBackground(),
+            Scaffold(
+              appBar: _mainSelectedIndex == 0
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(271.0),
+                      child: AppBar(
+                        toolbarHeight: 271.0,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        flexibleSpace: HomeAppBarContent(
+                          selectedDate: _selectedDate,
+                          onDateSelected: _onDateSelected,
+                          timeOfDayFilter: _selectedTimeOfDayFilter,
+                          onTimeOfDayFilterTapped: _onTimeOfDayFilterTapped,
+                          colorScheme: colorScheme,
+                          textTheme: textTheme,
+                          isToday: isToday,
+                          dayLabel: dayLabel,
+                          formattedDate: formattedDate,
+                          debouncer: _debouncer,
+                          onGoToToday: _onGoToToday,
                         ),
                       ),
-                      const SizedBox(height: 15.0), // Top margin from the animation
-                    ],
-                  ),
-                )
-              : Stack(
-                  children: [
-                    // Normal UI visible when habits exist or on other screens
-                    _mainWidgetOptions(_selectedTimeOfDayFilter, _selectedDate)
-                        .elementAt(_mainSelectedIndex),
-                    if (habitService.isFetchingData)
-                      Positioned.fill(
-                        child: Container(
-                          color: colorScheme.surface.withAlpha((255 * 0.5).round()),
-                          child: Center(
-                            child: RotationTransition(
-                              turns: Tween<double>(begin: 0.0, end: 1.0)
-                                  .animate(_fabAnimationController),
-                              child: CircularProgressIndicator(
-                                  color: colorScheme.primary),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: CustomIcon.material(Icons.check_box_outlined).toWidget(defaultColor: _mainSelectedIndex == 0 ? colorScheme.primary : colorScheme.onSurface),
-                label: 'Habits',
-              ),
-              BottomNavigationBarItem(
-                icon: CustomIcon.material(Icons.history_toggle_off_outlined).toWidget(defaultColor: _mainSelectedIndex == 1 ? colorScheme.primary : colorScheme.onSurface),
-                label: 'History',
-              ),
-              BottomNavigationBarItem(
-                icon: CustomIcon.material(Icons.settings_outlined).toWidget(defaultColor: _mainSelectedIndex == 2 ? colorScheme.primary : colorScheme.onSurface),
-                label: 'Settings',
-              ),
-            ],
-            currentIndex: _mainSelectedIndex,
-            selectedItemColor: colorScheme.primary,
-            unselectedItemColor: colorScheme.onSurface,
-            onTap: (index) {
-              _debouncer.call(() => _onMainItemTapped(index));
-            },
-            type: BottomNavigationBarType.fixed,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-            backgroundColor: colorScheme.surface, // Use surface color
-            elevation: 6, // Softened shadow
-          ),
-          floatingActionButton: _mainSelectedIndex == 0
-              ? Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ScaleTransition(
-                    scale: _fabScaleAnimation,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        _debouncer.call(() {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) => const AddHabitScreen(),
-                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.easeInOut;
-
-                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
+                    )
+                  : null,
+              body: _mainSelectedIndex == 0 && habitService.habits.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: AnimatedBuilder(
+                              animation: _lottieAnimationController,
+                              builder: (context, child) {
+                                return Lottie.asset(
+                                  key: ValueKey('noHabitsAnimation'),
+                                  'assets/Meditation  Wait please.json',
+                                  controller: _lottieAnimationController,
+                                  width: 220,
+                                  height: 220,
+                                  fit: BoxFit.contain,
                                 );
                               },
                             ),
-                          );
-                        });
-                      },
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      elevation: 6, // Consistent elevation with BottomNavigationBar
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), // Rounded corners
-                      child: CustomIcon.material(Icons.add).toWidget(),
+                          ),
+                          const SizedBox(height: 15.0),
+                        ],
+                      ),
+                    )
+                  : Stack(
+                      children: [
+                        _mainWidgetOptions(_selectedTimeOfDayFilter, _selectedDate)
+                            .elementAt(_mainSelectedIndex),
+                        if (habitService.isFetchingData)
+                          Positioned.fill(
+                            child: Container(
+                              color: colorScheme.surface.withAlpha((255 * 0.5).round()),
+                              child: Center(
+                                child: RotationTransition(
+                                  turns: Tween<double>(begin: 0.0, end: 1.0)
+                                      .animate(_fabAnimationController),
+                                  child: CircularProgressIndicator(
+                                      color: colorScheme.primary),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
+              bottomNavigationBar: BottomNavigationBar(
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: CustomIcon.material(Icons.check_box_outlined).toWidget(defaultColor: _mainSelectedIndex == 0 ? colorScheme.primary : colorScheme.onSurface),
+                    label: 'Habits',
                   ),
-                )
-              : null,
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+                  BottomNavigationBarItem(
+                    icon: CustomIcon.material(Icons.history_toggle_off_outlined).toWidget(defaultColor: _mainSelectedIndex == 1 ? colorScheme.primary : colorScheme.onSurface),
+                    label: 'History',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: CustomIcon.material(Icons.settings_outlined).toWidget(defaultColor: _mainSelectedIndex == 2 ? colorScheme.primary : colorScheme.onSurface),
+                    label: 'Settings',
+                  ),
+                ],
+                currentIndex: _mainSelectedIndex,
+                selectedItemColor: colorScheme.primary,
+                unselectedItemColor: colorScheme.onSurface,
+                onTap: (index) {
+                  _debouncer.call(() => _onMainItemTapped(index));
+                },
+                type: BottomNavigationBarType.fixed,
+                selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+                backgroundColor: colorScheme.surface,
+                elevation: 6,
+              ),
+              floatingActionButton: _mainSelectedIndex == 0
+                  ? Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ScaleTransition(
+                        scale: _fabScaleAnimation,
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            _debouncer.call(() {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => const AddHabitScreen(),
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
+
+                                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            });
+                          },
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          child: CustomIcon.material(Icons.add).toWidget(),
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+          ],
         );
       },
     );

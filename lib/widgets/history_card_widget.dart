@@ -6,7 +6,6 @@ class HistoryCardWidget extends StatelessWidget {
   final String value;
   final String? subtitle;
   final CustomIcon icon; // Changed from IconData to CustomIcon
-  final Color color;
 
   const HistoryCardWidget({
     super.key,
@@ -14,21 +13,20 @@ class HistoryCardWidget extends StatelessWidget {
     required this.value,
     this.subtitle,
     required this.icon,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    // Determine text color based on the luminance of the card's background color
-    final textColor = color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    final textColor = Theme.of(context).colorScheme.onSurface;
     final shadowColor = isDarkMode ? Colors.black.withOpacity(0.4) : Colors.grey.withOpacity(0.4);
 
     return Card(
-      color: color,
+      color: Theme.of(context).colorScheme.surfaceVariant,
       elevation: 8,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Theme.of(context).colorScheme.outline),
       ),
       shadowColor: shadowColor,
       child: Padding(
